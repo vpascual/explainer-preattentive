@@ -17,7 +17,7 @@ const features = {
     color: {
         name: 'Color (Hue) — Red among blue',
         description: 'Different hues are processed preattentively, making colored targets pop out instantly.',
-        target: { type: 'circle', color: '#ef4444', size: 35 },
+        target: { type: 'circle', color: '#ef4444', size: 30 },
         distractor: { type: 'circle', color: '#3b82f6', size: 30 }
     },
     size: {
