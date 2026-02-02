@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preattentive Features in Data Visualization</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="wrap">
+        <div class="head">
+            <h1>Preattentive Features in Data Visualization</h1>
+            <p class="sub">
+                This page is a small interactive explainer inspired by an article by <a href="https://filwd.substack.com/p/teaching-data-visualization-with-f5e" target="_blank" rel="noopener">Enrico Bertini</a> on using focused, interactive examples to teach data visualization concepts.
+            </p>
+            <p class="sub">
+                The explainer demonstrates how certain visual features like color, size, and shape can be detected 
+                instantly (preattentively), while combinations of features require slower, sequential scanning. 
+                Its goal is to show why choosing the right visual encoding in data visualization is crucial—preattentive 
+                features allow viewers to grasp patterns at a glance, while poor choices force them to laboriously examine 
+                each data point.
+            </p>
+        </div>
+
+        <div class="panel">
+            <div class="controls">
+                <div>
+                    <label style="display:block;margin-bottom:6px;font-weight:500;">Choose a Visual Feature to Test</label>
+                    <select id="featureSelect">
+                        <option value="color">Color (Hue) — Red among blue</option>
+                        <option value="size">Size — Large among small</option>
+                        <option value="orientation">Orientation — Tilted among horizontal</option>
+                        <option value="shape">Shape — Square among circles</option>
+                        <option value="intensity">Intensity — Dark among light</option>
+                        <option value="enclosure">Enclosure — Circled item</option>
+                        <option value="length">Length — Long among short</option>
+                        <option value="curvature">Curvature — Curved among straight</option>
+                        <option value="conjunction">Conjunction — Red circle among red squares & blue circles</option>
+                    </select>
+                    <div class="feature-desc" id="featureDescription"></div>
+                </div>
+
+                <div class="baseline">
+                    <label>Number of distractors: <strong id="distractorCount">42</strong></label>
+                    <br>
+                    <input type="range" id="distractorSlider" min="5" max="50" value="42">
+                </div>
+
+                <div class="baseline">
+                    <label>Number of trials: <strong id="trialsCount">10</strong></label>
+                    <br>
+                    <input type="range" id="trialsSlider" min="5" max="30" value="10">
+                </div>
+
+                <div class="baseline">
+                    <label>Display duration: <strong id="durationCount">300</strong>ms</label>
+                    <br>
+                    <input type="range" id="durationSlider" min="100" max="500" value="300" step="100">
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div id="readyState">
+                <div class="instructions-grid">
+                    <div class="instruction-box">
+                        <h3>Instructions</h3>
+                        <p>
+                            On each trial, look at the display and quickly decide if the target feature is <strong>present</strong> or <strong>absent</strong>. 
+                            Click the corresponding button as fast as you can while staying accurate. Preattentive features 
+                            should "pop out" instantly, making your decision easy regardless of how many distractors are shown.
+                        </p>
+                    </div>
+                    <div class="instruction-box tip">
+                        <h3>Try this:</h3>
+                        <p>
+                            Run the test with <strong>Color</strong>, then run it again with 
+                            <strong>Conjunction</strong>. Notice how conjunction searches are slower 
+                            and more effortful—especially for "absent" trials where you must check every item.
+                        </p>
+                    </div>
+                </div>
+                <div style="text-align:center;">
+                    <button id="startButton">Start Test</button>
+                </div>
+            </div>
+
+            <div id="playingState" style="display:none;position:relative;">
+                <div id="countdownDisplay" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;background:var(--panel);z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:500px;">
+                    <div style="font-size:72px;font-weight:700;color:var(--accent);" id="countdownNumber">3</div>
+                    <div style="font-size:18px;color:var(--muted);margin-top:16px;">Get ready...</div>
+                </div>
+                <div id="trialDisplay">
+                    <div style="text-align:center;margin-bottom:12px;color:var(--muted);font-size:14px;">
+                        Trial <span id="trialProgress">1</span> of <span id="totalTrials">10</span>
+                        <span style="margin-left:16px;font-size:11px;opacity:0.5;" id="debugInfo"></span>
+                    </div>
+                    <svg id="canvas" width="350" height="350" viewBox="0 0 350 350"></svg>
+                    <div id="feedbackMessage" style="text-align:center;margin:12px 0;min-height:24px;font-weight:600;font-size:16px;"></div>
+                    <div class="response-buttons">
+                        <button id="presentButton" class="btn-present">Present</button>
+                        <button id="absentButton" class="btn-absent">Absent</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="resultState" style="display:none;">
+                <div class="result-display">
+                    <div id="resultIcon" class="result-icon"></div>
+                    <h2 id="resultTitle" class="result-title"></h2>
+                    <p id="resultMessage" class="result-msg"></p>
+                    <div id="resultTime" class="result-time"></div>
+                    <p id="resultExplanation" class="result-explain"></p>
+                    <button id="tryAgainButton">↻ Try Again</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="explain-inline">
+            <div class="explain-title">Why This Matters for Data Visualization</div>
+            <p class="explain-text">
+                Preattentive features are processed by our visual system in less than 250 milliseconds, 
+                before conscious attention. This makes them powerful tools for data visualization:
+                <strong>Use color</strong> to highlight important data points or categories,
+                <strong>use size</strong> to show magnitude or importance,
+                <strong>use shape</strong> to distinguish between different types of data, and
+                <strong>avoid conjunctions</strong> when you need quick pattern recognition.
+            </p>
+            <p class="explain-text" style="margin-top:12px;">
+                <strong>Important note:</strong> Not all preattentive features have the same effect. Some features like 
+                <strong>color (hue)</strong> and <strong>orientation</strong> are highly effective and produce strong pop-out effects. 
+                Others like <strong>curvature</strong> or <strong>enclosure</strong> may be weaker and more context-dependent. 
+                When designing visualizations, prioritize the most effective preattentive features for your most important distinctions.
+            </p>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
