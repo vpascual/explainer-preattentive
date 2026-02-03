@@ -169,9 +169,6 @@ function startTrial() {
     generateElements();
     renderElements();
     
-    // Debug: show if target is actually present
-    document.getElementById('debugInfo').textContent = `(Actually: ${targetPresent ? 'Present' : 'Absent'})`;
-    
     // Make sure canvas is visible
     canvas.style.opacity = '1';
     canvas.style.visibility = 'visible';
@@ -205,35 +202,37 @@ function generateElements() {
     positions.sort(() => Math.random() - 0.5);
     targetPresent = Math.random() > 0.5;
     
-    let startIdx = 0;
-    if (targetPresent) {
-        const targetIdx = Math.floor(Math.random() * Math.min(positions.length, numDistractors + 1));
-        elements.push({
-            ...positions[targetIdx],
-            isTarget: true,
-            ...features[selectedFeature].target
-        });
-        startIdx = 1;
-    }
+    // Decide which position gets the target (if present)
+    const targetPosition = targetPresent ? Math.floor(Math.random() * Math.min(positions.length, numDistractors + 1)) : -1;
     
-    const numDistractorsToAdd = targetPresent ? numDistractors : numDistractors + 1;
-    for (let i = 0; i < numDistractorsToAdd && i + startIdx < positions.length; i++) {
-        const idx = i + startIdx;
-        const distractor = features[selectedFeature].distractor;
-        
-        if (distractor.alt) {
-            const useAlt = Math.random() > 0.5;
+    const totalElements = numDistractors + (targetPresent ? 1 : 0);
+    
+    for (let i = 0; i < totalElements && i < positions.length; i++) {
+        if (targetPresent && i === targetPosition) {
+            // Add target
             elements.push({
-                ...positions[idx],
-                isTarget: false,
-                ...(useAlt ? distractor.alt : distractor)
+                ...positions[i],
+                isTarget: true,
+                ...features[selectedFeature].target
             });
         } else {
-            elements.push({
-                ...positions[idx],
-                isTarget: false,
-                ...distractor
-            });
+            // Add distractor
+            const distractor = features[selectedFeature].distractor;
+            
+            if (distractor.alt) {
+                const useAlt = Math.random() > 0.5;
+                elements.push({
+                    ...positions[i],
+                    isTarget: false,
+                    ...(useAlt ? distractor.alt : distractor)
+                });
+            } else {
+                elements.push({
+                    ...positions[i],
+                    isTarget: false,
+                    ...distractor
+                });
+            }
         }
     }
 }
